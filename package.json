@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rimraf ./build && tsc -p .",
-    "start": "ts-node-dev ./src/App.ts"
+    "start": "ts-node ./build/App.js",
+    "start-dev": "ts-node-dev ./src/App.ts"
   },
   "keywords": [],
   "author": "",

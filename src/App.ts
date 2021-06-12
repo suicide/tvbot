@@ -7,8 +7,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get(
-    "/",
+    "*",
     async (req: Request, res: Response): Promise<Response> => {
+        console.log(req);
+        return res.status(200).send({
+            message: "Hello World!",
+        });
+    }
+);
+app.post(
+    "*",
+    async (req: Request, res: Response): Promise<Response> => {
+        console.log(req.body);
         return res.status(200).send({
             message: "Hello World!",
         });

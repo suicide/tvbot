@@ -1,0 +1,33 @@
+name: Node.js CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 16
+      uses: actions/setup-node@v1
+      with:
+        node-version: '16.x'
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/.npm
+          node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - name: Install dependencies
+      run: npm ci
+    - name: Clean and Build
+      run: npm run build
+    - name: Package server app for docker build
+      uses: actions/upload-artifact@v2
+      with:
+        name: server app
+        path: |
+          build

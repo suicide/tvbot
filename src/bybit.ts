@@ -1,3 +1,4 @@
+import logger from "./logging";
 import {InverseClient} from "bybit-api";
 import {Order} from "./order";
 
@@ -38,11 +39,11 @@ class BybitHandler {
             }
         }
 
-        console.log("initialized symbols", this.symbols);
+        logger.debug("initialized symbols", this.symbols);
     }
 
     async setLeverage(symbol: string, leverage: number) {
-        // console.debug(`Setting leverage to`, leverage);
+        // logger.debug(`Setting leverage to`, leverage);
         const res = await client
             .setUserLeverage({symbol: symbol, leverage: leverage});
 
@@ -53,20 +54,20 @@ class BybitHandler {
     async openPosition(symbol: string, order: Order) {
         const sym = this.symbols[symbol];
         if (!sym) {
-            console.error("symbol not found on exchange", symbol);
+            logger.error("symbol not found on exchange", symbol);
             return false;
         }
 
         const hasPosition = await this.hasExistingPosition(symbol);
         if (hasPosition) {
             // TODO close position
-            console.error("open position found");
+            logger.error("open position found");
             return false;
         }
         const hasOrders = await this.hasOpenOrder(symbol);
         if (hasOrders) {
             // TODO close position
-            console.error("open order found");
+            logger.error("open order found");
             return false;
         }
 
@@ -75,14 +76,14 @@ class BybitHandler {
         await this.setLeverage(symbol, this.leverage);
 
         const qty = Math.floor(balance * order.entry * this.orderSize * this.leverage);
-        console.info("settng quantity to", qty);
+        logger.info("settng quantity to", qty);
 
         const direction = order.direction === "long" ? "Buy" : "Sell";
         const entry = round(order.entry, sym.tickSize);
         const tp = round(order.tp, sym.tickSize);
         const sl = round(order.sl, sym.tickSize);
 
-        console.info(`Creating new ${direction} order at ${entry} with tp: ${tp} and sl: ${sl}, size: ${qty}`);
+        logger.info(`Creating new ${direction} order at ${entry} with tp: ${tp} and sl: ${sl}, size: ${qty}`);
 
         const result = await client.placeActiveOrder({
             side: direction,
@@ -95,15 +96,15 @@ class BybitHandler {
             stop_loss: sl
         });
 
-        console.debug("result", result);
+        logger.debug("result", result);
         const success = result.result.order_status == "Created";
-        console.info("new order placed", success);
+        logger.info("new order placed", success);
         return success;
     }
 
     async hasExistingPosition(symbol: string) {
         const positionCall = await client.getPosition({symbol: symbol})
-        // console.debug("positions", positionCall);
+        // logger.debug("positions", positionCall);
         const position = positionCall.result;
         return position.size > 0;
     }
@@ -111,20 +112,20 @@ class BybitHandler {
     async hasOpenOrder(symbol: string) {
 
         const ordersResult = await client.getActiveOrderList({symbol: symbol, order_status: "New"});
-        // console.debug("ordersResult", ordersResult);
+        logger.debug("ordersResult", ordersResult);
 
         const orders = ordersResult.result.data as Array<any>;
-        console.log("orders", orders);
+        logger.debug("orders", orders);
 
         return !!orders.length;
     }
 
     async getBalance(symbol: string): Promise<number> {
         const balance = await client.getWalletBalance({coin: symbol});
-        // console.log("balance", balance);
+        logger.debug("balance", balance);
 
         const b = balance.result[symbol].available_balance;
-        console.info("Available balance", b);
+        logger.info("Available balance", b);
         return b;
     }
 }

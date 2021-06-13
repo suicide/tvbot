@@ -1,3 +1,4 @@
+import logger from "./logging";
 import express, { Application, Request, Response} from 'express';
 import {bbClient} from "./bybit";
 import { Order } from './order';
@@ -11,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get(
     "*",
     async (req: Request, res: Response): Promise<Response> => {
-        console.log(req);
+        logger.debug("some request");
         return res.status(200).send({
             message: "Hello World!",
         });
@@ -20,7 +21,7 @@ app.get(
 app.post(
     "/bybit/:symbol",
     async (req: Request, res: Response): Promise<Response> => {
-        console.log(req.body);
+
         const result = await bbClient.openPosition(req.params.symbol, req.body);
         return res.status(200).send({
             success: result
@@ -30,8 +31,8 @@ app.post(
 
 try {
     app.listen(port, (): void => {
-        console.log(`Connected successfully on port ${port}`);
+        logger.info(`Connected successfully on port ${port}`);
     });
 } catch (error) {
-    console.error(`Error occured: ${error.message}`);
+    logger.error(`Error occured: ${error.message}`);
 }

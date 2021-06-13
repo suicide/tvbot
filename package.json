@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "bybit-api": "^2.0.4",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "winston": "^3.3.3"
   }
 }

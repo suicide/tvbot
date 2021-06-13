@@ -1,4 +1,6 @@
 import express, { Application, Request, Response} from 'express';
+import {bbClient} from "./bybit";
+import { Order } from './order';
 
 const app: Application = express();
 const port = 3000;
@@ -16,11 +18,12 @@ app.get(
     }
 );
 app.post(
-    "*",
+    "/bybit/:symbol",
     async (req: Request, res: Response): Promise<Response> => {
         console.log(req.body);
+        const result = await bbClient.openPosition(req.params.symbol, req.body);
         return res.status(200).send({
-            message: "Hello World!",
+            success: result
         });
     }
 );

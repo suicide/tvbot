@@ -21,6 +21,7 @@
     "typescript": "^4.3.2"
   },
   "dependencies": {
+    "bybit-api": "^2.0.4",
     "express": "^4.17.1"
   }
 }

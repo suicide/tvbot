@@ -22,10 +22,21 @@ app.post(
     "/bybit/:symbol",
     async (req: Request, res: Response): Promise<Response> => {
 
-        const result = await bbClient.openPosition(req.params.symbol, req.body);
-        return res.status(200).send({
-            success: result
-        });
+        try {
+            const result = await bbClient.openPosition(req.params.symbol, req.body);
+            if (!result) {
+                logger.error("Failed to open position");
+            }
+            return res.status(result ? 200 : 400).send({
+                success: result
+            });
+        } catch (error) {
+            logger.error("Failed to open position %j", error);
+            return res.status(500).send({
+                success: false,
+                err: error
+            });
+        }
     }
 );
 

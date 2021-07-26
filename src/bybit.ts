@@ -32,7 +32,7 @@ function delay(ms: number) {
 async function getResult(res: Promise<any>): Promise<any> {
     const r = await res;
     if (r.ret_code !== 0) {
-        logger.error("Result returned failure: %s", r.ret_msg);
+        logger.error("Result returned failure: %s", r);
         throw new Error(r.ret_msg);
     }
     return r.result;
@@ -48,7 +48,7 @@ class BybitHandler {
 
     constructor() {
         logger.info("Using Livenet: %s, API_KEY: %s, API_SECRET: %s",
-                    useLive, apiKey.slice(0,3), apiKey.slice(0,3));
+                    useLive, apiKey.slice(0,3), apiSecret.slice(0,3));
     }
 
     async initSymbols() {
